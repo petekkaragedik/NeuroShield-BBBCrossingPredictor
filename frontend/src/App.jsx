@@ -4,8 +4,11 @@ import HeroLanding from './components/HeroLanding'
 import InputPanel from './components/InputPanel'
 import ResultsPanel from './components/ResultsPanel'
 import BatchScreening from './components/BatchScreening'
+import CompareView from './components/compare/CompareView'
 import StatsBar from './components/StatsBar'
 import Toast from './components/Toast'
+import HistorySidebar from './components/HistorySidebar'
+import { useSessionHistory } from './hooks/useSessionHistory'
 import { fetchPubChem, predict, checkHealth } from './api'
 
 const DEFAULT_FEATURES = {
@@ -35,6 +38,14 @@ function App() {
   const [currentNodeId, setCurrentNodeId] = useState(null)
   const nextNodeIdRef = useRef(1)
   const [compoundNameOverride, setCompoundNameOverride] = useState(null)
+  const [compareInitial, setCompareInitial] = useState(null)
+  const [historySidebarOpen, setHistorySidebarOpen] = useState(false)
+  const { entries: historyEntries, addEntry, removeEntry, clearHistory } = useSessionHistory()
+
+  function handleCompareWithCurrent(name) {
+    setCompareInitial(name)
+    setMode('compare')
+  }
 
   function handleEnterApp(compoundName = null) {
     if (compoundName) autoSearchRef.current = compoundName
@@ -105,6 +116,7 @@ function App() {
       const data = await predict(features)
       setResult(data)
       setPredictedCompound(compound)
+      if (compound) addEntry(compound, features, data, 'Single')
 
       // If this is the first prediction and no tree exists, create root node
       if (explorationTree.length === 0 && compound) {
@@ -214,7 +226,21 @@ function App() {
     setResult(result)
     setPredictedCompound(name)
     setPendingCompound(null)
+    addEntry(name, features, result, 'Batch')
     setMode('single')
+  }
+
+  function handleLoadFromHistory(entry, openCompare = false) {
+    setFeatures(entry.features)
+    setResult(entry.result)
+    setPredictedCompound(entry.name)
+    setPendingCompound(null)
+    if (openCompare) {
+      setCompareInitial(entry.name)
+      setMode('compare')
+    } else {
+      setMode('single')
+    }
   }
 
   return (
@@ -227,10 +253,17 @@ function App() {
         <div className="flex-1 flex flex-col
                         bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.08),transparent_60%)]
                         animate-app-enter">
-          <Header mode={mode} onModeChange={setMode} />
+          <Header
+            mode={mode}
+            onModeChange={setMode}
+            currentCompound={predictedCompound}
+            onCompareWithCurrent={handleCompareWithCurrent}
+            onToggleHistory={() => setHistorySidebarOpen((o) => !o)}
+            historyCount={historyEntries.length}
+          />
 
           <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
-            {mode === 'single' ? (
+            {mode === 'single' && (
               <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
                 <InputPanel
                   features={features}
@@ -255,10 +288,17 @@ function App() {
                   getBreadcrumbPath={getBreadcrumbPath}
                 />
               </div>
-            ) : (
+            )}
+            {mode === 'batch' && (
               <BatchScreening
                 onSwitchToSingle={() => setMode('single')}
                 onLoadCompound={handleLoadCompoundFromBatch}
+              />
+            )}
+            {mode === 'compare' && (
+              <CompareView
+                initialCompound={compareInitial}
+                onConsumedInitial={() => setCompareInitial(null)}
               />
             )}
           </main>
@@ -268,6 +308,15 @@ function App() {
           </footer>
         </div>
       )}
+
+      <HistorySidebar
+        open={historySidebarOpen}
+        onClose={() => setHistorySidebarOpen(false)}
+        entries={historyEntries}
+        onRemove={removeEntry}
+        onClear={clearHistory}
+        onLoad={handleLoadFromHistory}
+      />
 
       <Toast toast={toast} onDismiss={() => setToast(null)} />
     </div>

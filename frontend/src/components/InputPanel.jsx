@@ -249,11 +249,7 @@ export default function InputPanel({ features, setFeatures, onSearch, onPredict,
       )}
 
       {/* ── Predict button — always visible ── */}
-      {pendingCompound && !predicting && (
-        <p className="text-xs text-center text-emerald-400 animate-pulse mb-2">
-          ✓ "{pendingCompound}" loaded — click below to predict
-        </p>
-      )}
+
       <button
         onClick={onPredict}
         disabled={predicting}

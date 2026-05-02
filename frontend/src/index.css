@@ -123,6 +123,15 @@ input[type="range"]::-moz-range-thumb {
   border: none;
 }
 
+@keyframes card-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.animate-card-slide-up {
+  animation: card-slide-up 0.5s cubic-bezier(0,0,0.2,1) both;
+}
+
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #0a0f1e; }
 ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }

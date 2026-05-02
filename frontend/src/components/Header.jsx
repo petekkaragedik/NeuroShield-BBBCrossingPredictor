@@ -1,8 +1,14 @@
-export default function Header({ mode, onModeChange }) {
+export default function Header({ mode, onModeChange, currentCompound, onCompareWithCurrent, onToggleHistory, historyCount }) {
+  const TABS = [
+    { id: 'single',  label: 'Single Compound'  },
+    { id: 'batch',   label: 'Batch Screening'  },
+    { id: 'compare', label: 'Compare'          },
+  ]
+
   return (
     <header className="border-b border-slate-800/80 bg-bg/80 backdrop-blur-sm sticky top-0 z-20">
       <div className="max-w-7xl mx-auto px-6 py-1">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-4">
             <img
               src="/logo.png"
@@ -19,31 +25,65 @@ export default function Header({ mode, onModeChange }) {
             </div>
           </div>
 
-          {/* Mode Tabs */}
-          {onModeChange && (
-            <div className="flex items-center gap-2 bg-slate-900/60 rounded-lg p-1 border border-slate-800">
+          <div className="flex items-center gap-3">
+            {/* History toggle */}
+            {onToggleHistory && (
               <button
-                onClick={() => onModeChange('single')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  mode === 'single'
-                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                    : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/40'
-                }`}
+                onClick={onToggleHistory}
+                className="relative w-9 h-9 flex items-center justify-center rounded-lg
+                           text-slate-400 hover:text-white hover:bg-slate-800 transition border border-slate-800"
+                title="Session History"
               >
-                Single Compound
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {historyCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-blue-500 text-white
+                                   text-[9px] font-bold w-4 h-4 flex items-center justify-center
+                                   rounded-full leading-none">
+                    {historyCount > 9 ? '9+' : historyCount}
+                  </span>
+                )}
               </button>
+            )}
+
+            {/* "Compare with current" shortcut */}
+            {mode === 'single' && currentCompound && onCompareWithCurrent && (
               <button
-                onClick={() => onModeChange('batch')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  mode === 'batch'
-                    ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                    : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/40'
-                }`}
+                onClick={() => onCompareWithCurrent(currentCompound)}
+                className="text-sm font-medium px-3 py-2 rounded-lg
+                           bg-purple-500/10 hover:bg-purple-500/20 text-purple-300
+                           border border-purple-500/30 transition flex items-center gap-2"
+                title={`Pre-fill compare view with ${currentCompound}`}
               >
-                Batch Screening
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                Compare with {currentCompound.length > 12 ? currentCompound.slice(0, 10) + '…' : currentCompound}
               </button>
-            </div>
-          )}
+            )}
+
+            {/* Mode Tabs */}
+            {onModeChange && (
+              <div className="flex items-center gap-2 bg-slate-900/60 rounded-lg p-1 border border-slate-800">
+                {TABS.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => onModeChange(t.id)}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      mode === t.id
+                        ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                        : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/40'
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

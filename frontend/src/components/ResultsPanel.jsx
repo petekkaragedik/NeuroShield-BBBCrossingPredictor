@@ -5,6 +5,7 @@ import SHAPTable from './SHAPTable'
 import LipinskiCheck from './LipinskiCheck'
 import SimilarCompounds from './SimilarCompounds'
 import ExplorationTree from './ExplorationTree'
+import OptimizationSuggestions from './OptimizationSuggestions'
 
 function ConfidenceBadge({ confidence }) {
   const styles = {
@@ -118,6 +119,12 @@ export default function ResultsPanel({
           )}
         </div>
       </section>
+
+      <OptimizationSuggestions
+        result={result}
+        features={features}
+        onExploreCompound={onExploreCompound}
+      />
 
       <SHAPTable factors={result.contributing_factors} />
       <LipinskiCheck features={features} />

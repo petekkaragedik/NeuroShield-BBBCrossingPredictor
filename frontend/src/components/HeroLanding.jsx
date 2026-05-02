@@ -5,9 +5,51 @@ const COMPOUNDS = [
 ]
 
 const USE_CASES = [
-  { icon: '🔬', title: 'Medicinal Chemists', desc: 'Screen BBB candidates before synthesis'         },
-  { icon: '🏥', title: 'Pharma R&D',         desc: 'Reduce wet lab costs with AI pre-screening'     },
-  { icon: '🎓', title: 'Researchers',         desc: 'Explore structure-activity relationships'       },
+  {
+    icon: '🔬',
+    title: 'Medicinal Chemists',
+    tagline: 'Screen BBB candidates before synthesis',
+    body: 'Predict permeability from molecular descriptors in seconds — before committing to expensive wet lab synthesis. Iterate faster on your scaffold design.',
+    badge: 'Single & Compare modes',
+    accent: {
+      border:  'rgba(59,130,246,0.45)',
+      iconBg:  'rgba(59,130,246,0.15)',
+      tagline: '#93c5fd',
+      badge:   { bg: 'rgba(59,130,246,0.20)', text: '#93c5fd', border: 'rgba(59,130,246,0.35)' },
+      shadow:  'rgba(59,130,246,0.18)',
+    },
+    delay: '0ms',
+  },
+  {
+    icon: '🏥',
+    title: 'Pharma R&D Teams',
+    tagline: 'Reduce wet lab costs with AI pre-screening',
+    body: 'Run batch screening across entire compound libraries. Export results as CSV or PDF reports for team review. Prioritize the most promising CNS candidates.',
+    badge: 'Batch Screening mode',
+    accent: {
+      border:  'rgba(168,85,247,0.45)',
+      iconBg:  'rgba(168,85,247,0.15)',
+      tagline: '#d8b4fe',
+      badge:   { bg: 'rgba(168,85,247,0.20)', text: '#d8b4fe', border: 'rgba(168,85,247,0.35)' },
+      shadow:  'rgba(168,85,247,0.18)',
+    },
+    delay: '150ms',
+  },
+  {
+    icon: '🎓',
+    title: 'Academic Researchers',
+    tagline: 'Explore structure-activity relationships',
+    body: 'Understand exactly why a compound crosses or gets blocked using SHAP explainability. Explore compound neighborhoods with the interactive exploration tree.',
+    badge: 'SHAP + Exploration Tree',
+    accent: {
+      border:  'rgba(20,184,166,0.45)',
+      iconBg:  'rgba(20,184,166,0.15)',
+      tagline: '#5eead4',
+      badge:   { bg: 'rgba(20,184,166,0.20)', text: '#5eead4', border: 'rgba(20,184,166,0.35)' },
+      shadow:  'rgba(20,184,166,0.18)',
+    },
+    delay: '300ms',
+  },
 ]
 
 const STATS = [
@@ -15,6 +57,64 @@ const STATS = [
   { value: 'Random Forest+SHAP', label: 'Model Architecture' },
   { value: 'PubChem',            label: 'API Integrated'     },
 ]
+
+function UseCaseCard({ card }) {
+  const { icon, title, tagline, body, badge, accent, delay } = card
+  return (
+    <div
+      className="animate-card-slide-up flex flex-col text-left rounded-2xl p-5
+                 transition-all duration-200 ease-out cursor-default
+                 hover:-translate-y-1"
+      style={{
+        animationDelay: delay,
+        background: '#111729',
+        borderTop: `2px solid ${accent.border}`,
+        border: `1px solid rgba(255,255,255,0.06)`,
+        borderTopColor: accent.border,
+        '--hover-shadow': `0 8px 32px ${accent.shadow}`,
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = `0 8px 32px ${accent.shadow}`
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = 'none'
+      }}
+    >
+      {/* Icon */}
+      <div
+        className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl mb-4 shrink-0"
+        style={{ background: accent.iconBg }}
+      >
+        {icon}
+      </div>
+
+      {/* Title */}
+      <h3 className="text-base font-bold text-white mb-1">{title}</h3>
+
+      {/* Tagline */}
+      <p className="text-xs font-medium mb-3" style={{ color: accent.tagline }}>
+        {tagline}
+      </p>
+
+      {/* Body */}
+      <p className="text-xs text-slate-400 leading-relaxed flex-1">{body}</p>
+
+      {/* Badge */}
+      <div className="mt-4 pt-3 border-t border-slate-800/60">
+        <span
+          className="inline-block text-[10px] font-semibold px-2.5 py-1 rounded-full border"
+          style={{
+            background: accent.badge.bg,
+            color: accent.badge.text,
+            borderColor: accent.badge.border,
+          }}
+        >
+          {badge}
+        </span>
+      </div>
+    </div>
+  )
+}
 
 export default function HeroLanding({ onEnter, exiting }) {
   return (
@@ -108,32 +208,28 @@ export default function HeroLanding({ onEnter, exiting }) {
           </div>
         </div>
 
+        {/* Use-case cards */}
+        <div className="w-full max-w-4xl mb-10">
+          <p className="text-[11px] uppercase tracking-widest text-slate-500 mb-4 text-left">
+            Built for every stage of CNS drug discovery
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {USE_CASES.map((card) => (
+              <UseCaseCard key={card.title} card={card} />
+            ))}
+          </div>
+        </div>
+
         {/* Primary CTA */}
         <button
           onClick={() => onEnter(null)}
           className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold
                      text-lg rounded-xl transition-all duration-200
                      shadow-[0_0_24px_rgba(59,130,246,0.35)] hover:shadow-[0_0_36px_rgba(59,130,246,0.5)]
-                     hover:scale-105 animate-glow-pulse mb-14"
+                     hover:scale-105 animate-glow-pulse"
         >
           Start Screening →
         </button>
-
-        {/* Divider */}
-        <div className="w-full max-w-3xl border-t border-slate-800/60 mb-10" />
-
-        {/* Use-case cards */}
-        <div className="grid grid-cols-3 gap-4 w-full max-w-3xl">
-          {USE_CASES.map((card) => (
-            <div key={card.title}
-                 className="bg-panel border border-slate-800/80 rounded-xl p-5 text-left
-                            hover:border-slate-700 transition-colors duration-200">
-              <div className="text-3xl mb-3">{card.icon}</div>
-              <div className="text-sm font-semibold text-slate-200 mb-1.5">{card.title}</div>
-              <div className="text-xs text-slate-500 leading-relaxed">{card.desc}</div>
-            </div>
-          ))}
-        </div>
 
       </div>
     </div>
