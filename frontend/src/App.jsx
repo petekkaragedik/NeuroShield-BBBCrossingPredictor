@@ -55,6 +55,7 @@ function App() {
       const cidPart = data.CID ? ` (CID: ${data.CID})` : ''
       showToast('success', `Found: ${name}${cidPart}`)
     } catch (err) {
+      console.error('[handleSearch] caught error:', err, 'name:', err?.name, 'message:', err?.message, 'stack:', err?.stack)
       showToast('error', err.message || `"${name}" not found`)
     } finally {
       setSearching(false)

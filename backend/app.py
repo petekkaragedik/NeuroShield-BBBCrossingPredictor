@@ -9,6 +9,7 @@ from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors
 
 app = Flask(__name__)
+app.json.allow_nan = False  # reject NaN/Infinity, force valid JSON
 CORS(app)
 
 FEATURES = ["MW", "LogP", "HBD", "TPSA", "RingCount", "RotBonds"]
@@ -60,13 +61,25 @@ def get_contributing_factors(user_input):
     return result
 
 
+def _clean_name(raw):
+    if raw is None:
+        return "Unknown compound"
+    try:
+        if isinstance(raw, float) and np.isnan(raw):
+            return "Unknown compound"
+    except Exception:
+        pass
+    s = str(raw).strip()
+    return s if s and s.lower() != "nan" else "Unknown compound"
+
+
 def get_similar_compounds(user_input):
     distances, indices = nn.kneighbors([user_input])
     similar = []
     for dist, idx in zip(distances[0], indices[0]):
         row = compounds_db.iloc[idx]
         similar.append({
-            "name": row["compound_name"],
+            "name": _clean_name(row["compound_name"]),
             "bbb_status": "BBB+" if row["label"] == 1 else "BBB-",
             "similarity": round(1 / (1 + dist), 3),
             "MW": round(row["MW"], 2),
