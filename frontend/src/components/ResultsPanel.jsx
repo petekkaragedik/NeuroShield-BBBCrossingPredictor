@@ -48,7 +48,7 @@ function LoadingState() {
   )
 }
 
-export default function ResultsPanel({ result, predicting, features }) {
+export default function ResultsPanel({ result, predicting, features, compoundName }) {
   if (predicting) return <LoadingState />
   if (!result) return <EmptyState />
 
@@ -57,12 +57,17 @@ export default function ResultsPanel({ result, predicting, features }) {
   return (
     <div className="space-y-4 animate-fade-in">
       <section className="bg-[#111729] border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
             Prediction Result
           </h2>
           <ConfidenceBadge confidence={result.confidence} />
         </div>
+        {compoundName && (
+          <p className="text-center text-2xl font-bold text-white uppercase tracking-widest mb-4">
+            {compoundName}
+          </p>
+        )}
 
         <ProbabilityCircle
           probability={result.probability}

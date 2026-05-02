@@ -21,6 +21,8 @@ function App() {
   const [searching, setSearching] = useState(false)
   const [toast, setToast] = useState(null)
   const [backendOnline, setBackendOnline] = useState(false)
+  const [pendingCompound, setPendingCompound] = useState(null)
+  const [predictedCompound, setPredictedCompound] = useState(null)
 
   useEffect(() => {
     let cancelled = false
@@ -54,6 +56,7 @@ function App() {
       })
       const cidPart = data.CID ? ` (CID: ${data.CID})` : ''
       showToast('success', `Found: ${name}${cidPart}`)
+      setPendingCompound(name)
     } catch (err) {
       console.error('[handleSearch] caught error:', err, 'name:', err?.name, 'message:', err?.message, 'stack:', err?.stack)
       showToast('error', err.message || `"${name}" not found`)
@@ -69,9 +72,12 @@ function App() {
     }
     setPredicting(true)
     setResult(null)
+    const compound = pendingCompound
+    setPendingCompound(null)
     try {
       const data = await predict(features)
       setResult(data)
+      setPredictedCompound(compound)
     } catch (err) {
       showToast('error', err.message || 'Prediction failed')
     } finally {
@@ -93,11 +99,13 @@ function App() {
             onPredict={handlePredict}
             searching={searching}
             predicting={predicting}
+            pendingCompound={pendingCompound}
           />
           <ResultsPanel
             result={result}
             predicting={predicting}
             features={features}
+            compoundName={predictedCompound}
           />
         </div>
       </main>

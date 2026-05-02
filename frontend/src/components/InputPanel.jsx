@@ -10,7 +10,7 @@ const SLIDER_CONFIG = [
   { name: 'RotBonds',  label: 'Rotatable Bonds',   min: 0,   max: 15,  step: 1,    unit: '' },
 ]
 
-export default function InputPanel({ features, setFeatures, onSearch, onPredict, searching, predicting }) {
+export default function InputPanel({ features, setFeatures, onSearch, onPredict, searching, predicting, pendingCompound }) {
   const [name, setName] = useState('')
 
   function updateFeature(key, value) {
@@ -85,17 +85,32 @@ export default function InputPanel({ features, setFeatures, onSearch, onPredict,
         ))}
       </div>
 
+      {pendingCompound && !predicting && (
+        <p className="mt-4 text-xs text-center text-emerald-400 animate-pulse">
+          ✓ "{pendingCompound}" loaded — click below to predict
+        </p>
+      )}
+
       <button
         onClick={onPredict}
         disabled={predicting}
-        className="w-full mt-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50
-                   disabled:cursor-not-allowed text-white font-semibold rounded-lg transition
-                   flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+        className={`w-full mt-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed text-white
+                   font-semibold rounded-lg transition flex items-center justify-center gap-2
+                   shadow-lg ${pendingCompound
+                     ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20'
+                     : 'bg-blue-600 hover:bg-blue-500 shadow-blue-500/20'}`}
       >
         {predicting ? (
           <>
             <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin-slow" />
             Predicting...
+          </>
+        ) : pendingCompound ? (
+          <>
+            Predict {pendingCompound}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
           </>
         ) : (
           <>
