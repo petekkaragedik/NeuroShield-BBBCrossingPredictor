@@ -40,6 +40,25 @@ export async function predict(features) {
   return data
 }
 
+export async function fetchSuggestions(query) {
+  if (!query) return []
+  try {
+    if (query.length < 3) {
+      const res = await fetch(`${API_BASE}/search/${encodeURIComponent(query)}`)
+      if (!res.ok) return []
+      return await res.json()
+    }
+    const res = await fetch(
+      `https://pubchem.ncbi.nlm.nih.gov/rest/autocomplete/compound/${encodeURIComponent(query)}/json?limit=7`
+    )
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.dictionary_terms?.compound ?? []
+  } catch {
+    return []
+  }
+}
+
 export async function checkHealth() {
   try {
     const res = await fetch(`${API_BASE}/health`)
