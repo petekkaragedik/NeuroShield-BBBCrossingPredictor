@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { fetchPubChem, predict } from '../api'
+import { BatchReport } from './PrintReport'
 import './BatchScreening.css'
 
 function parseCSV(text) {
@@ -554,6 +555,17 @@ export default function BatchScreening({ onSwitchToSingle, onLoadCompound }) {
             </button>
           )}
         </div>
+      )}
+
+      {/* Hidden batch report - shown only during print */}
+      {completedResults.length > 0 && (
+        <BatchReport
+          results={completedResults}
+          totalScreened={totalScreened}
+          bbbPlusCount={bbbPlusCount}
+          bbbMinusCount={bbbMinusCount}
+          avgProbability={avgProbability}
+        />
       )}
     </div>
   )

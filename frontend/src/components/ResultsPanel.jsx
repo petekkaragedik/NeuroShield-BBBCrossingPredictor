@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import BrainVisualizer from './BrainVisualizer'
 import VerdictBanner from './VerdictBanner'
 import SHAPTable from './SHAPTable'
@@ -6,6 +6,9 @@ import LipinskiCheck from './LipinskiCheck'
 import SimilarCompounds from './SimilarCompounds'
 import ExplorationTree from './ExplorationTree'
 import OptimizationSuggestions from './OptimizationSuggestions'
+import { SingleCompoundReport } from './PrintReport'
+import { copyCurrentURLToClipboard } from '../utils/urlState'
+import { useToast } from './ToastStack'
 
 function ConfidenceBadge({ confidence }) {
   const styles = {
@@ -64,6 +67,9 @@ export default function ResultsPanel({
   onResetExploration,
   getBreadcrumbPath
 }) {
+  const showToast = useToast()
+  const [shareLinkCopied, setShareLinkCopied] = useState(false)
+
   // Increment on every new result so BrainVisualizer's key changes and restarts animations
   const revisionRef = useRef(0)
   if (result) revisionRef.current += 1
@@ -74,6 +80,25 @@ export default function ResultsPanel({
   const isBorderline = Math.abs(result.probability - 50) < 15
   const breadcrumbPath = getBreadcrumbPath()
   const showExplorationTree = explorationTree.length > 1
+
+  const handleDownloadReport = () => {
+    window.print()
+  }
+
+  const handleShareResult = async () => {
+    const success = await copyCurrentURLToClipboard()
+    if (success) {
+      setShareLinkCopied(true)
+      showToast('link', 'Result link copied to clipboard')
+
+      // Reset button text after 2 seconds
+      setTimeout(() => {
+        setShareLinkCopied(false)
+      }, 2000)
+    } else {
+      showToast('error', 'Failed to copy link to clipboard')
+    }
+  }
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -89,7 +114,46 @@ export default function ResultsPanel({
             <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
               Prediction Result
             </h2>
-            <ConfidenceBadge confidence={result.confidence} />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleShareResult}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg
+                           border border-slate-700 bg-transparent
+                           text-slate-300 hover:text-white hover:border-slate-600
+                           transition-all duration-200 text-xs font-medium"
+              >
+                {shareLinkCopied ? (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Link Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    Share Result
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleDownloadReport}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg
+                           border border-slate-700 bg-transparent
+                           text-slate-300 hover:text-white hover:border-slate-600
+                           transition-all duration-200 text-xs font-medium"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Download Report
+              </button>
+              <ConfidenceBadge confidence={result.confidence} />
+            </div>
           </div>
 
           {compoundName && (
@@ -147,6 +211,13 @@ export default function ResultsPanel({
           onResetExploration={onResetExploration}
         />
       )}
+
+      {/* Hidden print report - shown only during print */}
+      <SingleCompoundReport
+        compoundName={compoundName}
+        features={features}
+        result={result}
+      />
     </div>
   )
 }

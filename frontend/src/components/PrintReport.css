@@ -1,0 +1,456 @@
+/* Print Report Styles */
+
+/* Hide the print report by default (only show when printing) */
+#print-report,
+#print-report-batch {
+  display: none;
+}
+
+/* Print-specific styles */
+@media print {
+  /* Hide everything except the print report */
+  body > *:not(#print-report):not(#print-report-batch) {
+    display: none !important;
+  }
+
+  /* Show the print report */
+  #print-report,
+  #print-report-batch {
+    display: block !important;
+  }
+
+  /* Page setup */
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+
+  /* Reset colors for print */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  /* Ensure no page breaks inside important blocks */
+  .print-section,
+  .print-verdict,
+  .print-descriptors-grid,
+  .print-table,
+  .print-lipinski-grid {
+    page-break-inside: avoid;
+  }
+}
+
+/* Report Container */
+.print-report {
+  background: white;
+  color: #1f2937;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 0;
+  font-size: 11pt;
+  line-height: 1.5;
+}
+
+/* Header */
+.print-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.print-header-left,
+.print-header-right {
+  flex: 1;
+}
+
+.print-header-center {
+  flex: 2;
+  text-align: center;
+}
+
+.print-logo {
+  font-size: 16pt;
+  font-weight: bold;
+  color: #2563eb;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-title {
+  font-size: 18pt;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-timestamp {
+  font-size: 9pt;
+  color: #6b7280;
+  text-align: right;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-divider {
+  border-bottom: 1.5px solid #1f2937;
+  margin: 16px 0 24px 0;
+}
+
+/* Sections */
+.print-section {
+  margin-bottom: 24px;
+}
+
+.print-section-title {
+  font-size: 13pt;
+  font-weight: bold;
+  color: #111827;
+  margin: 0 0 8px 0;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-section-caption {
+  font-size: 9pt;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+  font-style: italic;
+}
+
+/* Compound Identity */
+.print-compound-name {
+  font-size: 20pt;
+  font-weight: bold;
+  color: #111827;
+  text-align: center;
+  margin: 0 0 20px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-descriptors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.print-descriptor {
+  text-align: center;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+}
+
+.print-descriptor-label {
+  font-size: 9pt;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-descriptor-value {
+  font-size: 14pt;
+  font-weight: bold;
+  color: #111827;
+  font-family: 'Courier New', monospace;
+}
+
+/* Verdict Block */
+.print-verdict {
+  text-align: center;
+  padding: 20px;
+  margin: 24px 0;
+  border-radius: 8px;
+  border: 2px solid;
+}
+
+.print-verdict.positive {
+  background: #d1fae5;
+  border-color: #10b981;
+}
+
+.print-verdict.negative {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.print-verdict.borderline {
+  background: #fef3c7;
+  border-color: #f59e0b;
+}
+
+.print-verdict-result {
+  font-size: 15pt;
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-verdict.positive .print-verdict-result {
+  color: #065f46;
+}
+
+.print-verdict.negative .print-verdict-result {
+  color: #991b1b;
+}
+
+.print-verdict.borderline .print-verdict-result {
+  color: #92400e;
+}
+
+.print-verdict-probability {
+  font-size: 24pt;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.print-verdict.positive .print-verdict-probability {
+  color: #047857;
+}
+
+.print-verdict.negative .print-verdict-probability {
+  color: #dc2626;
+}
+
+.print-verdict.borderline .print-verdict-probability {
+  color: #d97706;
+}
+
+.print-verdict-confidence {
+  font-size: 10pt;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Tables */
+.print-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10pt;
+  margin-top: 12px;
+}
+
+.print-table th {
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: 600;
+  text-align: left;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 9pt;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.print-table td {
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.print-table tbody tr.even {
+  background: #f9fafb;
+}
+
+.print-table tbody tr.odd {
+  background: white;
+}
+
+.print-table .font-semibold {
+  font-weight: 600;
+}
+
+.print-table .positive-shap {
+  color: #059669;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.print-table .negative-shap {
+  color: #dc2626;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.print-table .positive-result {
+  color: #059669;
+  font-weight: bold;
+}
+
+.print-table .negative-result {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+/* Batch table specific */
+.print-table-batch th,
+.print-table-batch td {
+  font-size: 9pt;
+  padding: 6px 8px;
+}
+
+/* Lipinski Checklist */
+.print-lipinski-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.print-lipinski-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border: 1.5px solid;
+  border-radius: 6px;
+}
+
+.print-lipinski-item.pass {
+  background: #d1fae5;
+  border-color: #10b981;
+}
+
+.print-lipinski-item.fail {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.print-lipinski-icon {
+  font-size: 16pt;
+}
+
+.print-lipinski-content {
+  flex: 1;
+}
+
+.print-lipinski-label {
+  font-size: 10pt;
+  font-weight: 600;
+  color: #111827;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-lipinski-actual {
+  font-size: 8pt;
+  color: #6b7280;
+  font-family: 'Courier New', monospace;
+}
+
+.print-lipinski-summary {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #111827;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Optimization List */
+.print-optimization-list {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.print-optimization-list li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* Batch Stats */
+.print-batch-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.print-batch-stat {
+  text-align: center;
+  padding: 16px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.print-batch-stat.positive {
+  background: #d1fae5;
+  border-color: #10b981;
+}
+
+.print-batch-stat.negative {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+.print-batch-stat-label {
+  font-size: 9pt;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-family: system-ui, -apple-system, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.print-batch-stat-value {
+  font-size: 24pt;
+  font-weight: bold;
+  color: #111827;
+}
+
+.print-batch-stat-pct {
+  font-size: 11pt;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* Donut Chart */
+.print-donut-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.print-donut-chart {
+  max-width: 200px;
+  height: auto;
+}
+
+/* Footer */
+.print-footer {
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid #d1d5db;
+  text-align: center;
+}
+
+.print-footer-text {
+  font-size: 9pt;
+  color: #4b5563;
+  margin-bottom: 4px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.print-footer-disclaimer {
+  font-size: 8pt;
+  color: #6b7280;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.print-footer-page {
+  font-size: 8pt;
+  color: #9ca3af;
+  font-family: system-ui, -apple-system, sans-serif;
+}

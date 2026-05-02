@@ -6,10 +6,11 @@ import ResultsPanel from './components/ResultsPanel'
 import BatchScreening from './components/BatchScreening'
 import CompareView from './components/compare/CompareView'
 import StatsBar from './components/StatsBar'
-import Toast from './components/Toast'
+import ToastStack, { useToast } from './components/ToastStack'
 import HistorySidebar from './components/HistorySidebar'
 import { useSessionHistory } from './hooks/useSessionHistory'
 import { fetchPubChem, predict, checkHealth } from './api'
+import { encodeSingleCompoundURL, decodeSingleCompoundURL, updateURL, getURLParams } from './utils/urlState'
 
 const DEFAULT_FEATURES = {
   MW: 180,
@@ -21,16 +22,24 @@ const DEFAULT_FEATURES = {
 }
 
 function App() {
-  const [showLanding, setShowLanding] = useState(true)
+  const showToast = useToast()
+  const urlLoadedRef = useRef(false)
+
+  // Check if URL has shareable state on initial load
+  const initialURLState = useRef(() => {
+    const params = getURLParams()
+    return decodeSingleCompoundURL(params)
+  })()
+
+  const [showLanding, setShowLanding] = useState(!initialURLState)
   const [landingExiting, setLandingExiting] = useState(false)
   const autoSearchRef = useRef(null)
   const [mode, setMode] = useState('single') // 'single' or 'batch'
 
-  const [features, setFeatures] = useState(DEFAULT_FEATURES)
+  const [features, setFeatures] = useState(initialURLState?.features || DEFAULT_FEATURES)
   const [result, setResult] = useState(null)
   const [predicting, setPredicting] = useState(false)
   const [searching, setSearching] = useState(false)
-  const [toast, setToast] = useState(null)
   const [backendOnline, setBackendOnline] = useState(false)
   const [pendingCompound, setPendingCompound] = useState(null)
   const [predictedCompound, setPredictedCompound] = useState(null)
@@ -76,9 +85,37 @@ function App() {
     }
   }, [])
 
-  function showToast(type, message, duration) {
-    setToast({ type, message, duration })
-  }
+  // Load shared result from URL on mount
+  useEffect(() => {
+    if (initialURLState && !urlLoadedRef.current && backendOnline) {
+      urlLoadedRef.current = true
+
+      // Set compound name if present
+      if (initialURLState.compound) {
+        setPredictedCompound(initialURLState.compound)
+      }
+
+      // Auto-run prediction with URL features
+      ;(async () => {
+        setPredicting(true)
+        try {
+          const data = await predict(initialURLState.features)
+          setResult(data)
+
+          if (initialURLState.compound) {
+            addEntry(initialURLState.compound, initialURLState.features, data, 'Single')
+            showToast('share', `📎 Loaded shared result for ${initialURLState.compound}`)
+          } else {
+            showToast('share', `📎 Loaded shared result`)
+          }
+        } catch (err) {
+          showToast('error', err.message || 'Failed to load shared result')
+        } finally {
+          setPredicting(false)
+        }
+      })()
+    }
+  }, [backendOnline]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSearch(name) {
     setSearching(true)
@@ -117,6 +154,10 @@ function App() {
       setResult(data)
       setPredictedCompound(compound)
       if (compound) addEntry(compound, features, data, 'Single')
+
+      // Update URL with shareable state
+      const queryString = encodeSingleCompoundURL(compound, features)
+      updateURL(queryString)
 
       // If this is the first prediction and no tree exists, create root node
       if (explorationTree.length === 0 && compound) {
@@ -195,6 +236,10 @@ function App() {
     setPredictedCompound(node.name)
     setCurrentNodeId(nodeId)
     setPendingCompound(null)
+
+    // Update URL when navigating to a different compound
+    const queryString = encodeSingleCompoundURL(node.name, node.features)
+    updateURL(queryString)
   }
 
   function handleResetExploration() {
@@ -318,7 +363,7 @@ function App() {
         onLoad={handleLoadFromHistory}
       />
 
-      <Toast toast={toast} onDismiss={() => setToast(null)} />
+      <ToastStack />
     </div>
   )
 }
