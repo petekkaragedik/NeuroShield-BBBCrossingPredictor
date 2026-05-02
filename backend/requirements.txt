@@ -1,0 +1,10 @@
+qc-B3DB
+scikit-learn
+xgboost
+shap
+flask
+flask-cors
+requests
+pandas
+numpy
+rdkit
