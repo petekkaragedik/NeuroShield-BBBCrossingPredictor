@@ -1,4 +1,8 @@
-export default function Header({ mode, onModeChange, currentCompound, onCompareWithCurrent, onToggleHistory, historyCount }) {
+import { useNavigation } from '../context/NavigationContext'
+
+export default function Header({ mode, onModeChange, currentCompound, onCompareWithCurrent, onToggleHistory, historyCount, onHome }) {
+  const { canGoBack, canGoForward, backLabel, forwardLabel, goBack, goForward } = useNavigation()
+
   const TABS = [
     { id: 'single',  label: 'Single Compound'  },
     { id: 'batch',   label: 'Batch Screening'  },
@@ -9,20 +13,57 @@ export default function Header({ mode, onModeChange, currentCompound, onCompareW
     <header className="border-b border-slate-800/80 bg-bg/80 backdrop-blur-sm sticky top-0 z-20">
       <div className="max-w-7xl mx-auto px-6 py-1">
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-4">
-            <img
-              src="/logo.png"
-              alt="NeuroShield"
-              className="h-36 w-36 object-contain mix-blend-screen -my-2"
-            />
-            <div>
-              <h1 className="text-3xl font-semibold text-white tracking-tight leading-none">
-                Neuro<span className="text-blue-400">Shield</span>
-              </h1>
-              <p className="text-sm text-slate-400 mt-2">
-                AI-powered Blood-Brain Barrier Permeability Predictor
-              </p>
+          <div className="flex items-center gap-3">
+            {/* Back / Forward */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={goBack}
+                disabled={!canGoBack}
+                title={canGoBack ? `Back to ${backLabel}` : 'No history'}
+                className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all
+                           ${canGoBack
+                             ? 'text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600'
+                             : 'text-slate-700 cursor-not-allowed border border-slate-800/40'}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={goForward}
+                disabled={!canGoForward}
+                title={canGoForward ? `Forward to ${forwardLabel}` : 'No forward history'}
+                className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all
+                           ${canGoForward
+                             ? 'text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-700/60 hover:border-slate-600'
+                             : 'text-slate-700 cursor-not-allowed border border-slate-800/40'}`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
+            <button
+              onClick={onHome}
+              className="group flex items-center gap-4 focus:outline-none"
+              title="Go to home"
+            >
+              <img
+                src="/logo.png"
+                alt="NeuroShield"
+                className="h-36 w-36 object-contain mix-blend-screen -my-2
+                           transition-opacity duration-200 group-hover:opacity-80"
+              />
+              <div className="text-left">
+                <h1 className="text-3xl font-semibold text-white tracking-tight leading-none
+                               transition-colors duration-200 group-hover:text-blue-300">
+                  Neuro<span className="text-blue-400 group-hover:text-blue-300">Shield</span>
+                </h1>
+                <p className="text-sm text-slate-400 mt-2 transition-colors duration-200 group-hover:text-slate-300">
+                  AI-powered Blood-Brain Barrier Permeability Predictor
+                </p>
+              </div>
+            </button>
           </div>
 
           <div className="flex items-center gap-3">

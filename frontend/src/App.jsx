@@ -11,6 +11,7 @@ import HistorySidebar from './components/HistorySidebar'
 import { useSessionHistory } from './hooks/useSessionHistory'
 import { fetchPubChem, predict, checkHealth } from './api'
 import { encodeSingleCompoundURL, decodeSingleCompoundURL, updateURL, getURLParams } from './utils/urlState'
+import { useNavigation } from './context/NavigationContext'
 
 const DEFAULT_FEATURES = {
   MW: 180,
@@ -25,11 +26,11 @@ function App() {
   const showToast = useToast()
   const urlLoadedRef = useRef(false)
 
-  // Check if URL has shareable state on initial load
-  const initialURLState = useRef(() => {
+  // Check if URL has shareable state on initial load (runs once)
+  const [initialURLState] = useState(() => {
     const params = getURLParams()
     return decodeSingleCompoundURL(params)
-  })()
+  })
 
   const [showLanding, setShowLanding] = useState(!initialURLState)
   const [landingExiting, setLandingExiting] = useState(false)
@@ -50,16 +51,41 @@ function App() {
   const [compareInitial, setCompareInitial] = useState(null)
   const [historySidebarOpen, setHistorySidebarOpen] = useState(false)
   const { entries: historyEntries, addEntry, removeEntry, clearHistory } = useSessionHistory()
+  const { push, goBack, goForward, canGoBack, clearPendingRestore, pendingRestore } = useNavigation()
+  const canGoBackRef = useRef(false)
+  canGoBackRef.current = canGoBack
+  const escTimeRef = useRef(0)
+
+  const MODE_LABELS = { single: 'Single Compound', batch: 'Batch Screening', compare: 'Compare' }
 
   function handleCompareWithCurrent(name) {
+    push('Compare', { showLanding: false, mode: 'compare', features: { ...features }, result, compoundName: predictedCompound })
     setCompareInitial(name)
     setMode('compare')
   }
 
+  function handleModeChange(newMode) {
+    push(MODE_LABELS[newMode] || newMode, {
+      showLanding: false,
+      mode: newMode,
+      features: { ...features },
+      result: newMode === 'single' ? result : null,
+      compoundName: newMode === 'single' ? predictedCompound : null,
+    })
+    setMode(newMode)
+  }
+
   function handleEnterApp(compoundName = null) {
+    push('Single Compound', { showLanding: false, mode: 'single', features: { ...features }, result: null, compoundName: null })
     if (compoundName) autoSearchRef.current = compoundName
     setLandingExiting(true)
     setTimeout(() => setShowLanding(false), 500)
+  }
+
+  function handleGoHome() {
+    push('Landing', { showLanding: true })
+    setShowLanding(true)
+    setLandingExiting(false)
   }
 
   // Trigger auto-search once landing has fully exited
@@ -108,6 +134,14 @@ function App() {
           } else {
             showToast('share', `📎 Loaded shared result`)
           }
+
+          push(initialURLState.compound || 'Shared Result', {
+            showLanding: false,
+            mode: 'single',
+            features: { ...initialURLState.features },
+            result: { ...data },
+            compoundName: initialURLState.compound || null,
+          })
         } catch (err) {
           showToast('error', err.message || 'Failed to load shared result')
         } finally {
@@ -158,6 +192,15 @@ function App() {
       // Update URL with shareable state
       const queryString = encodeSingleCompoundURL(compound, features)
       updateURL(queryString)
+
+      // Push to navigation history
+      push(compound || 'Prediction', {
+        showLanding: false,
+        mode: 'single',
+        features: { ...features },
+        result: { ...data },
+        compoundName: compound,
+      })
 
       // If this is the first prediction and no tree exists, create root node
       if (explorationTree.length === 0 && compound) {
@@ -237,9 +280,16 @@ function App() {
     setCurrentNodeId(nodeId)
     setPendingCompound(null)
 
-    // Update URL when navigating to a different compound
     const queryString = encodeSingleCompoundURL(node.name, node.features)
     updateURL(queryString)
+
+    push(node.name, {
+      showLanding: false,
+      mode: 'single',
+      features: { ...node.features },
+      result: { ...node.result },
+      compoundName: node.name,
+    })
   }
 
   function handleResetExploration() {
@@ -266,12 +316,13 @@ function App() {
   }
 
   // Load compound from batch screening into single view
-  function handleLoadCompoundFromBatch(name, features, result) {
-    setFeatures(features)
-    setResult(result)
+  function handleLoadCompoundFromBatch(name, batchFeatures, batchResult) {
+    setFeatures(batchFeatures)
+    setResult(batchResult)
     setPredictedCompound(name)
     setPendingCompound(null)
-    addEntry(name, features, result, 'Batch')
+    addEntry(name, batchFeatures, batchResult, 'Batch')
+    push(name, { showLanding: false, mode: 'single', features: { ...batchFeatures }, result: { ...batchResult }, compoundName: name })
     setMode('single')
   }
 
@@ -281,12 +332,67 @@ function App() {
     setPredictedCompound(entry.name)
     setPendingCompound(null)
     if (openCompare) {
+      push('Compare', { showLanding: false, mode: 'compare', features: { ...entry.features }, result: { ...entry.result }, compoundName: entry.name })
       setCompareInitial(entry.name)
       setMode('compare')
     } else {
+      push(entry.name, { showLanding: false, mode: 'single', features: { ...entry.features }, result: { ...entry.result }, compoundName: entry.name })
       setMode('single')
     }
   }
+
+  // Push initial landing state once on mount
+  useEffect(() => {
+    push(showLanding ? 'Landing' : 'App', {
+      showLanding,
+      mode: 'single',
+      features: { ...features },
+      result: null,
+      compoundName: null,
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Apply snapshot when user navigates back/forward
+  useEffect(() => {
+    if (!pendingRestore) return
+    clearPendingRestore()
+    const { showLanding: sl, mode: m, features: f, result: r, compoundName } = pendingRestore
+    if (sl) {
+      setShowLanding(true)
+      setLandingExiting(false)
+    } else {
+      setShowLanding(false)
+      setMode(m || 'single')
+      if (f) setFeatures(f)
+      setResult(r ?? null)
+      setPredictedCompound(compoundName ?? null)
+      setPendingCompound(null)
+      if (compoundName && f) updateURL(encodeSingleCompoundURL(compoundName, f))
+    }
+  }, [pendingRestore]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keyboard shortcuts: Alt+←/→ for back/forward, double-Escape for back
+  useEffect(() => {
+    function onKey(e) {
+      if (e.altKey && e.key === 'ArrowLeft') { e.preventDefault(); goBack(); return }
+      if (e.altKey && e.key === 'ArrowRight') { e.preventDefault(); goForward(); return }
+      if (e.key === 'Escape') {
+        const tag = document.activeElement?.tagName
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+        if (!canGoBackRef.current) return
+        const now = Date.now()
+        if (now - escTimeRef.current < 600) {
+          goBack()
+          escTimeRef.current = 0
+        } else {
+          escTimeRef.current = now
+          showToast('info', '← Press Escape again to go back')
+        }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [goBack, goForward]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen flex flex-col bg-bg">
@@ -300,11 +406,12 @@ function App() {
                         animate-app-enter">
           <Header
             mode={mode}
-            onModeChange={setMode}
+            onModeChange={handleModeChange}
             currentCompound={predictedCompound}
             onCompareWithCurrent={handleCompareWithCurrent}
             onToggleHistory={() => setHistorySidebarOpen((o) => !o)}
             historyCount={historyEntries.length}
+            onHome={handleGoHome}
           />
 
           <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
@@ -336,7 +443,7 @@ function App() {
             )}
             {mode === 'batch' && (
               <BatchScreening
-                onSwitchToSingle={() => setMode('single')}
+                onSwitchToSingle={() => handleModeChange('single')}
                 onLoadCompound={handleLoadCompoundFromBatch}
               />
             )}
