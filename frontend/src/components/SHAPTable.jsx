@@ -2,7 +2,7 @@ export default function SHAPTable({ factors }) {
   const maxAbs = Math.max(...factors.map((f) => Math.abs(f.impact)), 0.0001)
 
   return (
-    <div className="bg-[#0a0f1e]/60 border border-slate-800 rounded-xl p-5">
+    <div className="bg-bg/60 border border-slate-800 rounded-xl p-5">
       <h3 className="text-sm font-semibold text-slate-200 mb-1">
         Feature Contributions
       </h3>
@@ -23,7 +23,7 @@ export default function SHAPTable({ factors }) {
                 <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-700" />
                 {isPositive ? (
                   <div
-                    className="absolute left-1/2 h-3 rounded-r-sm bg-gradient-to-r from-emerald-500/80 to-emerald-400"
+                    className="absolute left-1/2 h-3 rounded-r-sm bg-linear-to-r from-emerald-500/80 to-emerald-400"
                     style={{ width: `${widthPct}%` }}
                   />
                 ) : (

@@ -90,6 +90,16 @@ def get_similar_compounds(user_input):
     return similar
 
 
+@app.route("/search/<query>", methods=["GET"])
+def search_compounds(query):
+    if not query:
+        return jsonify([])
+    q = query.lower()
+    matches = compounds_db["compound_name"].dropna()
+    matches = matches[matches.str.lower().str.startswith(q)].unique()
+    return jsonify(sorted(matches.tolist())[:8])
+
+
 @app.route("/predict", methods=["POST"])
 def predict():
     try:

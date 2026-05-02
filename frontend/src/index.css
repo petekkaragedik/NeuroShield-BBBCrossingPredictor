@@ -46,6 +46,49 @@ html, body, #root {
   animation: spin-slow 1s linear infinite;
 }
 
+@keyframes hero-exit {
+  from { opacity: 1; transform: translateY(0)   scale(1);    }
+  to   { opacity: 0; transform: translateY(-40px) scale(0.97); }
+}
+
+.animate-hero-exit {
+  animation: hero-exit 0.5s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes app-enter {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.animate-app-enter {
+  animation: app-enter 0.6s cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.35), 0 0 40px rgba(59,130,246,0.15); }
+  50%       { box-shadow: 0 0 32px rgba(59,130,246,0.55), 0 0 64px rgba(59,130,246,0.25); }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes brain-glow-green {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(16,185,129,0.25)); }
+  50%       { filter: drop-shadow(0 0 10px rgba(16,185,129,0.9)); }
+}
+.animate-brain-glow-green {
+  animation: brain-glow-green 2s ease-in-out infinite;
+}
+
+@keyframes brain-glow-red {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(239,68,68,0.25)); }
+  50%       { filter: drop-shadow(0 0 10px rgba(239,68,68,0.9));  }
+}
+.animate-brain-glow-red {
+  animation: brain-glow-red 2s ease-in-out infinite;
+}
+
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;

@@ -30,7 +30,7 @@ export default function Slider({ label, name, value, min, max, step, unit, onCha
             onChange={(e) => setInputVal(e.target.value)}
             onBlur={(e) => commit(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && e.target.blur()}
-            className="w-20 text-right text-sm font-mono text-blue-300 bg-[#0a0f1e] border border-slate-700
+            className="w-20 text-right text-sm font-mono text-blue-300 bg-bg border border-slate-700
                        rounded px-2 py-0.5 outline-none focus:border-blue-500 focus:ring-1
                        focus:ring-blue-500/30 tabular-nums [appearance:textfield]
                        [&::-webkit-inner-spin-button]:appearance-none

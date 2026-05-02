@@ -2,7 +2,7 @@ export default function SimilarCompounds({ compounds }) {
   if (!compounds || compounds.length === 0) return null
 
   return (
-    <div className="bg-[#0a0f1e]/60 border border-slate-800 rounded-xl p-5">
+    <div className="bg-bg/60 border border-slate-800 rounded-xl p-5">
       <h3 className="text-sm font-semibold text-slate-200 mb-1">Similar Compounds</h3>
       <p className="text-[11px] text-slate-500 mb-4">
         From training database, ranked by descriptor similarity
@@ -13,7 +13,7 @@ export default function SimilarCompounds({ compounds }) {
           return (
             <div
               key={i}
-              className="bg-[#111729] border border-slate-800 hover:border-slate-700 transition
+              className="bg-panel border border-slate-800 hover:border-slate-700 transition
                          rounded-lg p-3"
             >
               <div className="flex items-start justify-between mb-2 gap-2">

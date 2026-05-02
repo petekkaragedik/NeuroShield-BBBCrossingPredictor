@@ -1,7 +1,7 @@
-export default function Header({ backendOnline }) {
+export default function Header() {
   return (
-    <header className="border-b border-slate-800/80 bg-[#0a0f1e]/80 backdrop-blur-sm sticky top-0 z-20">
-      <div className="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between">
+    <header className="border-b border-slate-800/80 bg-bg/80 backdrop-blur-sm sticky top-0 z-20">
+      <div className="max-w-7xl mx-auto px-6 py-1 flex items-center">
         <div className="flex items-center gap-4">
           <img
             src="/logo.png"
@@ -16,15 +16,6 @@ export default function Header({ backendOnline }) {
               AI-powered Blood-Brain Barrier Permeability Predictor
             </p>
           </div>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs text-slate-400">
-          <span
-            className={`w-2 h-2 rounded-full ${
-              backendOnline ? 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'bg-red-500'
-            }`}
-          />
-          {backendOnline ? 'API online' : 'API offline'}
         </div>
       </div>
     </header>

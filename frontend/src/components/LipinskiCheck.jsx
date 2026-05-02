@@ -8,7 +8,7 @@ export default function LipinskiCheck({ features }) {
   const passed = rules.filter((r) => r.pass).length
 
   return (
-    <div className="bg-[#0a0f1e]/60 border border-slate-800 rounded-xl p-5">
+    <div className="bg-bg/60 border border-slate-800 rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-slate-200">Lipinski's Rule of Five</h3>

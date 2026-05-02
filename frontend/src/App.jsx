@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Header from './components/Header'
+import HeroLanding from './components/HeroLanding'
 import InputPanel from './components/InputPanel'
 import ResultsPanel from './components/ResultsPanel'
+import StatsBar from './components/StatsBar'
 import Toast from './components/Toast'
 import { fetchPubChem, predict, checkHealth } from './api'
 
@@ -15,6 +17,10 @@ const DEFAULT_FEATURES = {
 }
 
 function App() {
+  const [showLanding, setShowLanding] = useState(true)
+  const [landingExiting, setLandingExiting] = useState(false)
+  const autoSearchRef = useRef(null)
+
   const [features, setFeatures] = useState(DEFAULT_FEATURES)
   const [result, setResult] = useState(null)
   const [predicting, setPredicting] = useState(false)
@@ -23,6 +29,21 @@ function App() {
   const [backendOnline, setBackendOnline] = useState(false)
   const [pendingCompound, setPendingCompound] = useState(null)
   const [predictedCompound, setPredictedCompound] = useState(null)
+
+  function handleEnterApp(compoundName = null) {
+    if (compoundName) autoSearchRef.current = compoundName
+    setLandingExiting(true)
+    setTimeout(() => setShowLanding(false), 500)
+  }
+
+  // Trigger auto-search once landing has fully exited
+  useEffect(() => {
+    if (!showLanding && autoSearchRef.current) {
+      const name = autoSearchRef.current
+      autoSearchRef.current = null
+      handleSearch(name)
+    }
+  }, [showLanding]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     let cancelled = false
@@ -86,33 +107,42 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0f1e]
-                    bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.08),_transparent_60%)]">
-      <Header backendOnline={backendOnline} />
+    <div className="min-h-screen flex flex-col bg-bg">
+      <StatsBar backendOnline={backendOnline} />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
-          <InputPanel
-            features={features}
-            setFeatures={setFeatures}
-            onSearch={handleSearch}
-            onPredict={handlePredict}
-            searching={searching}
-            predicting={predicting}
-            pendingCompound={pendingCompound}
-          />
-          <ResultsPanel
-            result={result}
-            predicting={predicting}
-            features={features}
-            compoundName={predictedCompound}
-          />
+      {showLanding ? (
+        <HeroLanding exiting={landingExiting} onEnter={handleEnterApp} />
+      ) : (
+        <div className="flex-1 flex flex-col
+                        bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.08),transparent_60%)]
+                        animate-app-enter">
+          <Header />
+
+          <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
+              <InputPanel
+                features={features}
+                setFeatures={setFeatures}
+                onSearch={handleSearch}
+                onPredict={handlePredict}
+                searching={searching}
+                predicting={predicting}
+                pendingCompound={pendingCompound}
+              />
+              <ResultsPanel
+                result={result}
+                predicting={predicting}
+                features={features}
+                compoundName={predictedCompound}
+              />
+            </div>
+          </main>
+
+          <footer className="border-t border-slate-800/60 py-4 text-center text-xs text-slate-600">
+            NeuroShield · Trained on B3DB (7807 molecules) · Random Forest + SHAP
+          </footer>
         </div>
-      </main>
-
-      <footer className="border-t border-slate-800/60 py-4 text-center text-xs text-slate-600">
-        NeuroShield · Trained on B3DB (7807 molecules) · Random Forest + SHAP
-      </footer>
+      )}
 
       <Toast toast={toast} onDismiss={() => setToast(null)} />
     </div>

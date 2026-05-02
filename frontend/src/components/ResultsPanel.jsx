@@ -1,4 +1,5 @@
-import ProbabilityCircle from './ProbabilityCircle'
+import { useRef } from 'react'
+import BrainVisualizer from './BrainVisualizer'
 import SHAPTable from './SHAPTable'
 import LipinskiCheck from './LipinskiCheck'
 import SimilarCompounds from './SimilarCompounds'
@@ -19,8 +20,8 @@ function ConfidenceBadge({ confidence }) {
 
 function EmptyState() {
   return (
-    <div className="bg-[#111729] border border-slate-800 border-dashed rounded-2xl p-10
-                    flex flex-col items-center justify-center text-center min-h-[500px]">
+    <div className="bg-panel border border-slate-800 border-dashed rounded-2xl p-10
+                    flex flex-col items-center justify-center text-center min-h-125">
       <div className="w-14 h-14 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
         <svg className="w-7 h-7 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
@@ -37,8 +38,8 @@ function EmptyState() {
 
 function LoadingState() {
   return (
-    <div className="bg-[#111729] border border-slate-800 rounded-2xl p-10
-                    flex flex-col items-center justify-center text-center min-h-[500px]">
+    <div className="bg-panel border border-slate-800 rounded-2xl p-10
+                    flex flex-col items-center justify-center text-center min-h-125">
       <div className="relative">
         <div className="w-14 h-14 border-4 border-slate-800 border-t-blue-500 rounded-full animate-spin-slow" />
       </div>
@@ -49,35 +50,41 @@ function LoadingState() {
 }
 
 export default function ResultsPanel({ result, predicting, features, compoundName }) {
+  // Increment on every new result so BrainVisualizer's key changes and restarts animations
+  const revisionRef = useRef(0)
+  if (result) revisionRef.current += 1
+
   if (predicting) return <LoadingState />
-  if (!result) return <EmptyState />
+  if (!result)    return <EmptyState />
 
   const isBorderline = Math.abs(result.probability - 50) < 15
 
   return (
     <div className="space-y-4 animate-fade-in">
-      <section className="bg-[#111729] border border-slate-800 rounded-2xl p-6 shadow-xl">
+      <section className="bg-panel border border-slate-800 rounded-2xl p-6 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
             Prediction Result
           </h2>
           <ConfidenceBadge confidence={result.confidence} />
         </div>
+
         {compoundName && (
           <p className="text-center text-2xl font-bold text-white uppercase tracking-widest mb-4">
             {compoundName}
           </p>
         )}
 
-        <ProbabilityCircle
+        <BrainVisualizer
           probability={result.probability}
           prediction={result.prediction}
+          animKey={revisionRef.current}
         />
 
         {isBorderline && (
           <div className="mt-5 flex items-start gap-2 px-3 py-2.5 rounded-lg
                           bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
-            <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                     d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
             </svg>
