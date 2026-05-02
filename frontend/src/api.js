@@ -67,3 +67,21 @@ export async function checkHealth() {
     return false
   }
 }
+
+export async function chatCompound({ question, compoundName, descriptors, prediction, probability, shapValues }) {
+  const res = await fetch(`${API_BASE}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      question,
+      compound_name: compoundName,
+      descriptors,
+      prediction,
+      probability,
+      shap_values: shapValues,
+    }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Chat request failed')
+  return data.response
+}

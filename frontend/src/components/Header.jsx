@@ -11,7 +11,7 @@ export default function Header({ mode, onModeChange, currentCompound, onCompareW
 
   return (
     <header className="border-b border-slate-800/80 bg-bg/80 backdrop-blur-sm sticky top-0 z-20">
-      <div className="max-w-7xl mx-auto px-6 py-1">
+      <div className="max-w-400 mx-auto px-6 py-1">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
             {/* Back / Forward */}

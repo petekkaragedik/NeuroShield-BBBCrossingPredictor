@@ -12,6 +12,7 @@ import { useSessionHistory } from './hooks/useSessionHistory'
 import { fetchPubChem, predict, checkHealth } from './api'
 import { encodeSingleCompoundURL, decodeSingleCompoundURL, updateURL, getURLParams } from './utils/urlState'
 import { useNavigation } from './context/NavigationContext'
+import ChatSidebar from './components/ChatSidebar'
 
 const DEFAULT_FEATURES = {
   MW: 180,
@@ -414,9 +415,9 @@ function App() {
             onHome={handleGoHome}
           />
 
-          <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+          <main className="flex-1 max-w-400 mx-auto w-full px-6 py-8">
             {mode === 'single' && (
-              <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr_300px] gap-6">
                 <InputPanel
                   features={features}
                   setFeatures={setFeatures}
@@ -438,6 +439,11 @@ function App() {
                   onNavigateToNode={handleNavigateToNode}
                   onResetExploration={handleResetExploration}
                   getBreadcrumbPath={getBreadcrumbPath}
+                />
+                <ChatSidebar
+                  compoundName={predictedCompound}
+                  features={features}
+                  result={result}
                 />
               </div>
             )}

@@ -1,12 +1,17 @@
+import os
 import pickle
 import numpy as np
 import pandas as pd
 import shap
 import requests
+from groq import Groq
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from rdkit import Chem
 from rdkit.Chem import rdMolDescriptors
+
+load_dotenv()
 
 app = Flask(__name__)
 app.json.allow_nan = False  # reject NaN/Infinity, force valid JSON
@@ -159,6 +164,61 @@ def pubchem_lookup(compound_name):
             "RingCount": ring_count,
             "RotBonds":  props.get("RotatableBondCount", 0),
         })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    try:
+        body = request.json
+        question     = body.get("question", "").strip()
+        compound     = body.get("compound_name") or "Unknown compound"
+        descriptors  = body.get("descriptors", {})
+        prediction   = body.get("prediction", "")
+        probability  = body.get("probability", 0)
+        shap_values  = body.get("shap_values", [])
+
+        if not question:
+            return jsonify({"error": "question is required"}), 400
+
+        api_key = os.environ.get("GROQ_API_KEY")
+        if not api_key:
+            return jsonify({"error": "GROQ_API_KEY not set in backend/.env"}), 500
+
+        # Format SHAP values for the prompt
+        shap_lines = []
+        for s in shap_values:
+            sign = "+" if s["impact"] > 0 else ""
+            shap_lines.append(
+                f"  {s['feature']}={s['value']} (SHAP {sign}{s['impact']:.4f}, {s['direction']})"
+            )
+        shap_text = "\n".join(shap_lines) if shap_lines else "  (none)"
+
+        desc_text = ", ".join(f"{k}={v}" for k, v in descriptors.items())
+
+        system_prompt = (
+            f"You are NeuroShield's AI assistant. You help researchers understand "
+            f"BBB permeability predictions. "
+            f"Current compound: {compound}, "
+            f"BBB prediction: {prediction} ({probability}% probability), "
+            f"descriptors: {desc_text}, "
+            f"SHAP values (sorted by impact):\n{shap_text}\n"
+            f"Answer concisely in 2-3 sentences max. "
+            f"Be specific — reference actual numbers from the data."
+        )
+
+        client = Groq(api_key=api_key)
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            max_tokens=256,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user",   "content": question},
+            ],
+        )
+        return jsonify({"response": completion.choices[0].message.content})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
