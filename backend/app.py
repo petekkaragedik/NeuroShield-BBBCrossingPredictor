@@ -5,6 +5,8 @@ import shap
 import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from rdkit import Chem
+from rdkit.Chem import rdMolDescriptors
 
 app = Flask(__name__)
 CORS(app)
@@ -35,8 +37,16 @@ def get_confidence(prob):
 def get_contributing_factors(user_input):
     input_df = pd.DataFrame([user_input], columns=FEATURES)
     shap_vals = explainer.shap_values(input_df)
-    # shap_vals[1] = contribution toward BBB+
-    contributions = dict(zip(FEATURES, shap_vals[1][0]))
+    # SHAP shape varies: list[2] of (n,f) for older, ndarray (n,f,2) for newer,
+    # or plain (n,f) when explainer already targets the positive class.
+    arr = np.asarray(shap_vals)
+    if isinstance(shap_vals, list):
+        per_sample = shap_vals[1][0]
+    elif arr.ndim == 3:
+        per_sample = arr[0, :, 1]
+    else:
+        per_sample = arr[0]
+    contributions = dict(zip(FEATURES, per_sample))
     # Sort by absolute impact
     sorted_factors = sorted(contributions.items(), key=lambda x: abs(x[1]), reverse=True)
     result = []
@@ -104,19 +114,26 @@ def pubchem_lookup(compound_name):
         url = (
             f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/"
             f"{compound_name}/property/"
-            f"MolecularWeight,XLogP,HBondDonorCount,TPSA,RingCount,RotatableBondCount/JSON"
+            f"MolecularWeight,XLogP,HBondDonorCount,TPSA,RotatableBondCount,CanonicalSMILES/JSON"
         )
         res = requests.get(url, timeout=5)
         if res.status_code != 200:
             return jsonify({"error": "Compound not found"}), 404
 
         props = res.json()["PropertyTable"]["Properties"][0]
+        smiles = props.get("CanonicalSMILES") or props.get("ConnectivitySMILES") or ""
+        ring_count = 0
+        if smiles:
+            mol = Chem.MolFromSmiles(smiles)
+            if mol is not None:
+                ring_count = rdMolDescriptors.CalcNumRings(mol)
+
         return jsonify({
             "MW":        props.get("MolecularWeight", 0),
             "LogP":      props.get("XLogP", 0),
             "HBD":       props.get("HBondDonorCount", 0),
             "TPSA":      props.get("TPSA", 0),
-            "RingCount": props.get("RingCount", 0),
+            "RingCount": ring_count,
             "RotBonds":  props.get("RotatableBondCount", 0),
         })
     except Exception as e:
@@ -129,4 +146,4 @@ def health():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
