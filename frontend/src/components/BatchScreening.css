@@ -1,0 +1,542 @@
+.batch-screening {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Input Section */
+.batch-input-section {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgb(30, 41, 59);
+  border-radius: 16px;
+}
+
+.batch-input-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.batch-input-mode-toggle {
+  display: flex;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  padding: 4px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.mode-toggle-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: rgb(148, 163, 184);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-toggle-btn.active {
+  background: rgba(59, 130, 246, 0.2);
+  color: rgb(96, 165, 250);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.mode-toggle-btn:hover:not(.active) {
+  background: rgba(71, 85, 105, 0.3);
+  color: rgb(203, 213, 225);
+}
+
+.batch-input-container {
+  margin-bottom: 16px;
+}
+
+.batch-textarea {
+  width: 100%;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgb(51, 65, 85);
+  border-radius: 8px;
+  color: rgb(226, 232, 240);
+  font-size: 14px;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.batch-textarea:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.batch-textarea::placeholder {
+  color: rgb(100, 116, 139);
+}
+
+.batch-compound-count {
+  margin-top: 8px;
+  text-align: right;
+  font-size: 12px;
+  color: rgb(148, 163, 184);
+  font-weight: 500;
+}
+
+.batch-csv-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  border: 2px dashed rgb(71, 85, 105);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.batch-csv-dropzone:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.batch-csv-icon {
+  width: 48px;
+  height: 48px;
+  color: rgb(100, 116, 139);
+  margin-bottom: 12px;
+}
+
+.batch-csv-text {
+  color: rgb(203, 213, 225);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.batch-csv-subtext {
+  color: rgb(100, 116, 139);
+  font-size: 12px;
+}
+
+.batch-run-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 8px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.batch-run-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 1), rgba(37, 99, 235, 1));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.batch-run-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Results Section */
+.batch-results-section {
+  width: 100%;
+}
+
+.batch-progress {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgb(30, 41, 59);
+  border-radius: 8px;
+}
+
+.batch-progress-text {
+  font-size: 14px;
+  color: rgb(203, 213, 225);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.batch-progress-track {
+  height: 8px;
+  background: rgba(71, 85, 105, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.batch-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.8), rgba(96, 165, 250, 0.8));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Stats */
+.batch-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Controls */
+.batch-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgb(30, 41, 59);
+  border-radius: 8px;
+}
+
+.batch-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  background: rgba(71, 85, 105, 0.2);
+  border: 1px solid rgba(71, 85, 105, 0.3);
+  border-radius: 6px;
+  color: rgb(148, 163, 184);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: rgb(96, 165, 250);
+}
+
+.filter-btn:hover:not(.active) {
+  background: rgba(71, 85, 105, 0.3);
+  color: rgb(203, 213, 225);
+}
+
+.batch-export {
+  display: flex;
+  gap: 8px;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 6px;
+  color: rgb(52, 211, 153);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Table */
+.batch-table-container {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgb(30, 41, 59);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.batch-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.batch-table thead {
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid rgb(51, 65, 85);
+}
+
+.batch-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(148, 163, 184);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  user-select: none;
+}
+
+.batch-table th:hover {
+  color: rgb(203, 213, 225);
+}
+
+.batch-table-row {
+  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.batch-table-row.even {
+  background: rgba(15, 23, 42, 0.3);
+}
+
+.batch-table-row.odd {
+  background: rgba(15, 23, 42, 0.15);
+}
+
+.batch-table-row:hover {
+  background: rgba(51, 65, 85, 0.4);
+}
+
+.batch-table-row.pending {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.batch-table td {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: rgb(148, 163, 184);
+}
+
+.bbb-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bbb-positive {
+  background: rgba(16, 185, 129, 0.2);
+  color: rgb(52, 211, 153);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.bbb-negative {
+  background: rgba(239, 68, 68, 0.2);
+  color: rgb(248, 113, 113);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.probability-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.probability-bar-container {
+  flex: 1;
+  height: 6px;
+  background: rgba(71, 85, 105, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.probability-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.probability-bar.positive {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.8), rgba(52, 211, 153, 0.8));
+}
+
+.probability-bar.negative {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.8), rgba(248, 113, 113, 0.8));
+}
+
+.probability-text {
+  font-size: 12px;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  color: rgb(203, 213, 225);
+  min-width: 45px;
+  text-align: right;
+}
+
+.lipinski-badge {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.lipinski-badge.pass {
+  color: rgb(52, 211, 153);
+}
+
+.lipinski-badge.warn {
+  color: rgb(251, 191, 36);
+}
+
+.view-btn {
+  padding: 6px 12px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  color: rgb(96, 165, 250);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Expanded Row */
+.expanded-row td {
+  padding: 0;
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid rgb(51, 65, 85);
+}
+
+.expanded-content {
+  padding: 20px;
+  animation: expand-fade-in 0.2s ease-out;
+}
+
+@keyframes expand-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.expanded-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgb(203, 213, 225);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.expanded-shap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.expanded-shap-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(71, 85, 105, 0.2);
+  border-radius: 6px;
+}
+
+.expanded-shap-feature {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(148, 163, 184);
+  min-width: 60px;
+}
+
+.expanded-shap-value {
+  font-size: 11px;
+  color: rgb(100, 116, 139);
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  flex: 1;
+}
+
+.expanded-shap-impact {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+}
+
+.expanded-shap-impact.positive {
+  color: rgb(52, 211, 153);
+}
+
+.expanded-shap-impact.negative {
+  color: rgb(248, 113, 113);
+}
+
+/* Reset Button */
+.batch-reset-btn {
+  padding: 12px 24px;
+  background: rgba(71, 85, 105, 0.2);
+  border: 1px solid rgba(71, 85, 105, 0.3);
+  border-radius: 8px;
+  color: rgb(203, 213, 225);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.batch-reset-btn:hover {
+  background: rgba(71, 85, 105, 0.3);
+  border-color: rgba(71, 85, 105, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Print Styles */
+@media print {
+  .batch-controls,
+  .batch-reset-btn,
+  .view-btn,
+  .export-btn {
+    display: none;
+  }
+
+  .batch-table {
+    page-break-inside: avoid;
+  }
+
+  .batch-stats {
+    page-break-after: avoid;
+  }
+}

@@ -36,7 +36,7 @@ function MoleculeIcon({ className }) {
   )
 }
 
-export default function InputPanel({ features, setFeatures, onSearch, onPredict, searching, predicting, pendingCompound }) {
+export default function InputPanel({ features, setFeatures, onSearch, onPredict, searching, predicting, pendingCompound, compoundNameOverride }) {
   const [name, setName]                   = useState('')
   const [suggestions, setSuggestions]     = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -46,6 +46,13 @@ export default function InputPanel({ features, setFeatures, onSearch, onPredict,
   const [imgError, setImgError]           = useState(false)
   const debounceRef = useRef(null)
   const wrapperRef  = useRef(null)
+
+  // Update name when a compound is selected from similar compounds
+  useEffect(() => {
+    if (compoundNameOverride) {
+      setName(compoundNameOverride)
+    }
+  }, [compoundNameOverride])
 
   // Persist identity card even after prediction clears pendingCompound
   useEffect(() => {

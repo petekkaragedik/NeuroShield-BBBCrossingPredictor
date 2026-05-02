@@ -1,8 +1,10 @@
 import { useRef } from 'react'
 import BrainVisualizer from './BrainVisualizer'
+import VerdictBanner from './VerdictBanner'
 import SHAPTable from './SHAPTable'
 import LipinskiCheck from './LipinskiCheck'
 import SimilarCompounds from './SimilarCompounds'
+import ExplorationTree from './ExplorationTree'
 
 function ConfidenceBadge({ confidence }) {
   const styles = {
@@ -49,7 +51,18 @@ function LoadingState() {
   )
 }
 
-export default function ResultsPanel({ result, predicting, features, compoundName }) {
+export default function ResultsPanel({
+  result,
+  predicting,
+  features,
+  compoundName,
+  onExploreCompound,
+  explorationTree,
+  currentNodeId,
+  onNavigateToNode,
+  onResetExploration,
+  getBreadcrumbPath
+}) {
   // Increment on every new result so BrainVisualizer's key changes and restarts animations
   const revisionRef = useRef(0)
   if (result) revisionRef.current += 1
@@ -58,47 +71,75 @@ export default function ResultsPanel({ result, predicting, features, compoundNam
   if (!result)    return <EmptyState />
 
   const isBorderline = Math.abs(result.probability - 50) < 15
+  const breadcrumbPath = getBreadcrumbPath()
+  const showExplorationTree = explorationTree.length > 1
 
   return (
     <div className="space-y-4 animate-fade-in">
-      <section className="bg-panel border border-slate-800 rounded-2xl p-6 shadow-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
-            Prediction Result
-          </h2>
-          <ConfidenceBadge confidence={result.confidence} />
-        </div>
-
-        {compoundName && (
-          <p className="text-center text-2xl font-bold text-white uppercase tracking-widest mb-4">
-            {compoundName}
-          </p>
-        )}
-
-        <BrainVisualizer
+      <section className="bg-panel border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <VerdictBanner
           probability={result.probability}
           prediction={result.prediction}
           animKey={revisionRef.current}
         />
 
-        {isBorderline && (
-          <div className="mt-5 flex items-start gap-2 px-3 py-2.5 rounded-lg
-                          bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
-            <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                    d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-            </svg>
-            <span>
-              <strong>Borderline compound</strong> — wet-lab validation recommended before
-              committing to a development pathway.
-            </span>
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-slate-200 uppercase tracking-wider">
+              Prediction Result
+            </h2>
+            <ConfidenceBadge confidence={result.confidence} />
           </div>
-        )}
+
+          {compoundName && (
+            <p className="text-center text-2xl font-bold text-white uppercase tracking-widest mb-4">
+              {compoundName}
+            </p>
+          )}
+
+          <BrainVisualizer
+            probability={result.probability}
+            prediction={result.prediction}
+            animKey={revisionRef.current}
+          />
+
+          {isBorderline && (
+            <div className="mt-5 flex items-start gap-2 px-3 py-2.5 rounded-lg
+                            bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
+              <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                      d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+              <span>
+                <strong>Borderline compound</strong> — wet-lab validation recommended before
+                committing to a development pathway.
+              </span>
+            </div>
+          )}
+        </div>
       </section>
 
       <SHAPTable factors={result.contributing_factors} />
       <LipinskiCheck features={features} />
-      <SimilarCompounds compounds={result.similar_compounds} />
+      <SimilarCompounds
+        compounds={result.similar_compounds}
+        currentCompound={compoundName}
+        currentFeatures={features}
+        currentBBBStatus={result.prediction}
+        onExploreCompound={onExploreCompound}
+        breadcrumbPath={breadcrumbPath}
+        onNavigateToNode={onNavigateToNode}
+      />
+
+      {showExplorationTree && (
+        <ExplorationTree
+          tree={explorationTree}
+          currentNodeId={currentNodeId}
+          onNavigateToNode={onNavigateToNode}
+          onExploreCompound={onExploreCompound}
+          onResetExploration={onResetExploration}
+        />
+      )}
     </div>
   )
 }

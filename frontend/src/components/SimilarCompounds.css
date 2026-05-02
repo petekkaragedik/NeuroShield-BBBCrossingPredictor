@@ -1,0 +1,156 @@
+/* Breadcrumb Trail */
+.breadcrumb-trail {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+
+.breadcrumb-item-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb-item {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-past {
+  color: rgb(148, 163, 184);
+}
+
+.breadcrumb-past:hover {
+  color: rgb(226, 232, 240);
+  text-decoration: underline;
+}
+
+.breadcrumb-current {
+  color: rgb(241, 245, 249);
+  font-weight: 600;
+  cursor: default;
+}
+
+.breadcrumb-separator {
+  color: rgb(100, 116, 139);
+  user-select: none;
+}
+
+.breadcrumb-ellipsis {
+  color: rgb(100, 116, 139);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Similar Compound Cards */
+.similar-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgb(30, 41, 59);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.similar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.similar-card-positive:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.similar-card-negative:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15), 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.similar-card-border {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.border-positive {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+}
+
+.border-negative {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+}
+
+.similar-card-content {
+  position: relative;
+  padding: 12px;
+  padding-left: 16px;
+}
+
+.similar-card-explore {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgb(96, 165, 250);
+  letter-spacing: 0.02em;
+  animation: explore-fade-in 0.2s ease-out;
+}
+
+@keyframes explore-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Similarity Bar */
+.similarity-bar-container {
+  margin-top: 4px;
+}
+
+.similarity-bar-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(71, 85, 105, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.similarity-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.similarity-bar-green {
+  background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+}
+
+.similarity-bar-yellow {
+  background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+}
+
+.similarity-bar-gray {
+  background: linear-gradient(90deg, #475569 0%, #64748b 100%);
+}

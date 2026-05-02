@@ -1,0 +1,252 @@
+.exploration-tree-panel {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgb(30, 41, 59);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+  animation: tree-slide-in 0.5s ease-out;
+}
+
+@keyframes tree-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exploration-tree-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.exploration-reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  color: rgb(96, 165, 250);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exploration-reset-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  transform: translateY(-1px);
+}
+
+.exploration-tree-canvas {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(71, 85, 105, 0.3);
+  border-radius: 8px;
+  height: 300px;
+  overflow: auto;
+  padding: 20px;
+}
+
+.exploration-tree-svg {
+  width: 100%;
+  min-width: 800px;
+  height: 100%;
+  min-height: 280px;
+}
+
+/* Tree Connections */
+.tree-connection {
+  stroke: rgba(100, 116, 139, 0.4);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Tree Nodes */
+.tree-node {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tree-node:hover {
+  transform: translateY(-2px);
+}
+
+.tree-node-rect {
+  fill: rgba(30, 41, 59, 0.9);
+  stroke-width: 2;
+  transition: all 0.2s ease;
+}
+
+.tree-node-positive {
+  stroke: rgba(16, 185, 129, 0.5);
+}
+
+.tree-node-negative {
+  stroke: rgba(239, 68, 68, 0.5);
+}
+
+.tree-node-rect-active {
+  fill: rgba(30, 41, 59, 1);
+  stroke-width: 3;
+}
+
+/* Active node glow */
+.tree-node-glow {
+  fill: none;
+  stroke-width: 6;
+  opacity: 0.4;
+  filter: blur(4px);
+  pointer-events: none;
+  animation: tree-node-pulse 2s ease-in-out infinite;
+}
+
+.tree-node-glow-positive {
+  stroke: rgb(16, 185, 129);
+}
+
+.tree-node-glow-negative {
+  stroke: rgb(239, 68, 68);
+}
+
+@keyframes tree-node-pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.tree-node-name {
+  fill: rgb(226, 232, 240);
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.tree-node-probability {
+  fill: rgb(148, 163, 184);
+  font-size: 10px;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  pointer-events: none;
+}
+
+.tree-node-dot-positive {
+  fill: rgb(52, 211, 153);
+}
+
+.tree-node-dot-negative {
+  fill: rgb(248, 113, 113);
+}
+
+/* Ghost Nodes */
+.tree-ghost-node {
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.tree-ghost-node:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.tree-ghost-rect {
+  fill: rgba(30, 41, 59, 0.5);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+  transition: all 0.2s ease;
+}
+
+.tree-ghost-positive {
+  stroke: rgba(16, 185, 129, 0.4);
+}
+
+.tree-ghost-negative {
+  stroke: rgba(239, 68, 68, 0.4);
+}
+
+.tree-ghost-rect:hover {
+  fill: rgba(30, 41, 59, 0.8);
+}
+
+.tree-ghost-name {
+  fill: rgb(148, 163, 184);
+  font-size: 10px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.tree-ghost-status {
+  fill: rgb(100, 116, 139);
+  font-size: 9px;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  pointer-events: none;
+}
+
+/* Tooltip */
+.tree-tooltip {
+  position: fixed;
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  pointer-events: none;
+  animation: tooltip-fade-in 0.15s ease-out;
+}
+
+.tree-tooltip-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(226, 232, 240);
+  margin-bottom: 4px;
+}
+
+.tree-tooltip-row {
+  font-size: 10px;
+  color: rgb(148, 163, 184);
+  margin-top: 2px;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+}
+
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar styling */
+.exploration-tree-canvas::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.exploration-tree-canvas::-webkit-scrollbar-track {
+  background: rgba(71, 85, 105, 0.2);
+  border-radius: 4px;
+}
+
+.exploration-tree-canvas::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
+  border-radius: 4px;
+}
+
+.exploration-tree-canvas::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
